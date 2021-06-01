@@ -122,8 +122,10 @@ vec3 GetGBufferDiffuse(vec2 uv) {
  *
  */
 vec3 EvalDiffuse(vec3 wi, vec3 wo, vec2 uv) {
-  vec3 L = vec3(0.0);
-  return L;
+  vec3 L = GetGBufferDiffuse(uv);
+  vec3 N = GetGBufferNormalWorld(uv);
+  float cosTheta = max(dot(wo, N), 0.0);
+  return L * cosTheta * INV_PI;
 }
 
 /*
@@ -145,8 +147,27 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos) {
 void main() {
   float s = InitRand(gl_FragCoord.xy);
 
+  vec2 uv = GetScreenCoordinate(vPosWorld.xyz);
+  vec3 normalWorld = GetGBufferNormalWorld(uv);
   vec3 L = vec3(0.0);
-  L = GetGBufferDiffuse(GetScreenCoordinate(vPosWorld.xyz));
-  vec3 color = pow(clamp(L, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2));
-  gl_FragColor = vec4(vec3(color.rgb), 1.0);
+  for(int i=0; i<SAMPLE_NUM; i++) {
+    float pdf;
+    vec3 dir = SampleHemisphereUniform(s, pdf);
+    vec3 hitPos;
+    vec3 t;
+    vec3 b;
+    LocalBasis(normalWorld, t, b);
+    mat3 matWorldToLocal;
+    matWorldToLocal[0] = t;
+    matWorldToLocal[1] = b;
+    matWorldToLocal[2] = normalWorld;
+    dir = mat3.inverse(matWorldToLocal) * dir;
+
+  }
+
+
+  // L = GetGBufferDiffuse(GetScreenCoordinate(vPosWorld.xyz));
+  // vec3 color = pow(clamp(L, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2));
+  // gl_FragColor = vec4(vec3(color.rgb), 1.0);
+  gl_FragColor = vec4(L, 1.0);
 }
