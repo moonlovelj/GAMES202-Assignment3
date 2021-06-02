@@ -122,10 +122,10 @@ vec3 GetGBufferDiffuse(vec2 uv) {
  *
  */
 vec3 EvalDiffuse(vec3 wi, vec3 wo, vec2 uv) {
-  vec3 L = GetGBufferDiffuse(uv);
   vec3 N = GetGBufferNormalWorld(uv);
+  vec3 kd = GetGBufferDiffuse(uv);
   float cosTheta = max(dot(wo, N), 0.0);
-  return L * cosTheta * INV_PI;
+  return kd * cosTheta * INV_PI;
 }
 
 /*
@@ -134,40 +134,59 @@ vec3 EvalDiffuse(vec3 wi, vec3 wo, vec2 uv) {
  *
  */
 vec3 EvalDirectionalLight(vec2 uv) {
-  vec3 Le = vec3(0.0);
-  return Le;
+  // vec3 N = GetGBufferNormalWorld(uv);
+  // float cosTheta = max(0.0, dot(N, uLightDir));
+  float visibility = GetGBufferuShadow(uv);
+  return uLightRadiance * visibility;
 }
 
 bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos) {
+  float delta = 0.5;
+  vec3 current = ori + delta * dir;
+  vec2 uv = GetScreenCoordinate(current); 
+  for (int times = 0; times < 1000; ++times) {
+    if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
+      break;
+    }
+
+    if (GetDepth(current) > GetGBufferDepth(uv)){
+       hitPos = current;
+       return true;
+    }
+   
+    current = current + delta * dir;
+    uv = GetScreenCoordinate(current);
+  }
+
   return false;
 }
 
-#define SAMPLE_NUM 1
+#define SAMPLE_NUM 2
 
 void main() {
   float s = InitRand(gl_FragCoord.xy);
 
   vec2 uv = GetScreenCoordinate(vPosWorld.xyz);
   vec3 normalWorld = GetGBufferNormalWorld(uv);
-  vec3 L = vec3(0.0);
+  vec3 L_inr = vec3(0.0);
   for(int i=0; i<SAMPLE_NUM; i++) {
     float pdf;
-    vec3 dir = SampleHemisphereUniform(s, pdf);
-    vec3 hitPos;
-    vec3 t;
-    vec3 b;
+    float rand = Rand1(s);
+    vec3 dir = SampleHemisphereCos(rand, pdf);
+    vec3 hitPos;vec3 t;vec3 b;
     LocalBasis(normalWorld, t, b);
-    mat3 matWorldToLocal;
-    matWorldToLocal[0] = t;
-    matWorldToLocal[1] = b;
-    matWorldToLocal[2] = normalWorld;
-    dir = mat3.inverse(matWorldToLocal) * dir;
-
+    dir = normalize(dir.x*t+dir.y*b+dir.z*normalWorld);
+    if (RayMarch(vPosWorld.xyz, dir, hitPos)) {
+        L_inr += (EvalDirectionalLight(GetScreenCoordinate(hitPos)) * 
+                  EvalDiffuse(normalize(vPosWorld.xyz-hitPos), uLightDir, GetScreenCoordinate(hitPos)) * 
+                  EvalDiffuse(normalize(uCameraPos-vPosWorld.xyz), normalize(hitPos-vPosWorld.xyz), uv) / pdf );
+    }
   }
 
+  L_inr /= float(SAMPLE_NUM);
 
-  // L = GetGBufferDiffuse(GetScreenCoordinate(vPosWorld.xyz));
-  // vec3 color = pow(clamp(L, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2));
-  // gl_FragColor = vec4(vec3(color.rgb), 1.0);
+  vec3 L_dir = EvalDirectionalLight(uv) * EvalDiffuse(normalize(uCameraPos-vPosWorld.xyz), uLightDir, uv);
+  vec3 L = L_dir + L_inr;
+  //L = pow(clamp(L, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2));
   gl_FragColor = vec4(L, 1.0);
 }
