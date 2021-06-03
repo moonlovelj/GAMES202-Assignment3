@@ -161,7 +161,7 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos) {
   return false;
 }
 
-#define SAMPLE_NUM 2
+#define SAMPLE_NUM 1
 
 void main() {
   float s = InitRand(gl_FragCoord.xy);
@@ -187,6 +187,6 @@ void main() {
 
   vec3 L_dir = EvalDirectionalLight(uv) * EvalDiffuse(normalize(uCameraPos-vPosWorld.xyz), uLightDir, uv);
   vec3 L = L_dir + L_inr;
-  //L = pow(clamp(L, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2));
+  L = pow(clamp(L, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2));
   gl_FragColor = vec4(L, 1.0);
 }
