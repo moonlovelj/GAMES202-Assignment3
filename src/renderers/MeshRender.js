@@ -144,7 +144,7 @@ class MeshRender {
 			[camera.position.x, camera.position.y, camera.position.z]);
 	}
 
-	bindMaterialParameters() {
+	bindMaterialParameters(camera) {
 		const gl = this.gl;
 
 		let textureNum = 0;
@@ -172,6 +172,13 @@ class MeshRender {
 				gl.bindTexture(gl.TEXTURE_2D, this.material.uniforms[k].value);
 				gl.uniform1i(this.shader.program.uniforms[k], textureNum);
 				textureNum += 1;
+			} else if (this.material.uniforms[k].type == 'textureMipmap') {
+				gl.activeTexture(gl.TEXTURE0 + textureNum);
+				gl.bindTexture(gl.TEXTURE_2D, this.material.uniforms[k].value);
+				//this.material.generateMipmaps(gl, camera.fbo);
+				gl.uniform1i(this.shader.program.uniforms[k], textureNum);
+				
+				textureNum += 1;
 			}
 		}
 	}
@@ -191,9 +198,10 @@ class MeshRender {
 		const gl = this.gl;
 
 		gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
-		gl.viewport(0.0, 0.0, window.screen.width, window.screen.height);
+		gl.viewport(0.0, 0.0, canvas_width, canvas_height);
 		if (fbo != null) {
-			gl_draw_buffers.drawBuffersWEBGL(fbo.attachments);
+			//gl_draw_buffers.drawBuffersWEBGL(fbo.attachments);
+			gl.drawBuffers(fbo.attachments);
 		}
 		gl.useProgram(this.shader.program.glShaderProgram);
 
@@ -205,7 +213,7 @@ class MeshRender {
 
 		// Bind material parameters
 		this.updateMaterialParameters(updatedParamters);
-		this.bindMaterialParameters();
+		this.bindMaterialParameters(camera);
 
 		// Draw
 		{

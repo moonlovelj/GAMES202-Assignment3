@@ -10,15 +10,18 @@ uniform vec3 uLightPos;
 uniform vec3 uCameraPos;
 uniform vec3 uLightRadiance;
 
-varying highp vec2 vTextureCoord;
-varying highp vec3 vFragPos;
-varying highp vec3 vNormal;
+in highp vec2 vTextureCoord;
+in highp vec3 vFragPos;
+in highp vec3 vNormal;
 
 // Shadow map related variables
 
 uniform sampler2D uShadowMap;
 
-varying vec4 vPositionFromLight;
+out vec4 vPositionFromLight;
+
+out highp vec4 fragColor;
+
 #define EPS 1e-3
 
 float unpack(vec4 rgbaDepth) {
@@ -28,13 +31,13 @@ float unpack(vec4 rgbaDepth) {
 }
 
 float useShadowMap(sampler2D shadowMap, vec4 shadowCoord) {
-  vec4 rgbaDepth = texture2D(shadowMap, shadowCoord.xy);
+  vec4 rgbaDepth = texture(shadowMap, shadowCoord.xy);
   float depth = unpack(rgbaDepth);
   return (shadowCoord.z > depth + EPS) ? 0.0 : 1.0;
 }
 
 vec3 blinnPhong() {
-  vec3 color = texture2D(uSampler, vTextureCoord).rgb;
+  vec3 color = texture(uSampler, vTextureCoord).rgb;
   color = pow(color, vec3(2.2));
 
   vec3 ambient = 0.05 * color;
@@ -66,5 +69,6 @@ void main(void) {
 
   vec3 phongColor = blinnPhong();
 
-  gl_FragColor = vec4(phongColor * visibility, 1.0);
+  // gl_FragColor = vec4(phongColor * visibility, 1.0);
+  fragColor = vec4(phongColor * visibility, 1.0);
 }

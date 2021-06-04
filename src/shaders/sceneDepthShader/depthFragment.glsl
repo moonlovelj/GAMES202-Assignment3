@@ -6,8 +6,10 @@ uniform vec3 uLightPos;
 uniform vec3 uCameraPos;
 uniform sampler2D uSampler;
 
-varying highp vec3 vNormal;
-varying highp vec2 vTextureCoord;
+in highp vec3 vNormal;
+in highp vec2 vTextureCoord;
+
+out highp vec4 fragColor;
 
 vec4 pack (float depth) {
     // 使用rgba 4字节共32位来存储z值,1个字节精度为1/256
@@ -22,5 +24,6 @@ vec4 pack (float depth) {
 void main(){
   //vec3 color = texture2D(uSampler, vTextureCoord).rgb;
   //gl_FragColor = vec4( gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);
-  gl_FragColor = pack(gl_FragCoord.z);
+  // gl_FragColor = pack(gl_FragCoord.z);
+  fragColor = pack(gl_FragCoord.z);
 }

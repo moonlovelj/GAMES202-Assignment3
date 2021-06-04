@@ -1,13 +1,13 @@
-attribute vec3 aVertexPosition;
-attribute vec3 aNormalPosition;
-attribute vec2 aTextureCoord;
+in vec3 aVertexPosition;
+in vec3 aNormalPosition;
+in vec2 aTextureCoord;
 
 uniform mat4 uModelMatrix;
 uniform mat4 uViewMatrix;
 uniform mat4 uProjectionMatrix;
 
-varying highp vec3 vNormal;
-varying highp vec2 vTextureCoord;
+out highp vec3 vNormal;
+out highp vec2 vTextureCoord;
 
 void main(void) {
 

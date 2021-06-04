@@ -3,23 +3,27 @@ var gl, gl_draw_buffers;
 var bufferFBO;
 var bumpMap;
 
+var canvas_width = 2048, canvas_height = 2048;
+
 GAMES202Main();
 
 function GAMES202Main() {
 	// Init canvas
 	const canvas = document.querySelector('#glcanvas');
-	canvas.width = window.screen.width;
-	canvas.height = window.screen.height;
+	canvas.width = canvas_width;
+	canvas.height = canvas_height;
 	// Init gl
-	gl = canvas.getContext('webgl');
+	gl = canvas.getContext('webgl2');
 	if (!gl) {
 		alert('Unable to initialize WebGL. Your browser or machine may not support it.');
 		return;
 	}
-	gl.getExtension('OES_texture_float');
-	gl_draw_buffers = gl.getExtension('WEBGL_draw_buffers');
-	var maxdb = gl.getParameter(gl_draw_buffers.MAX_DRAW_BUFFERS_WEBGL);
-    console.log('MAX_DRAW_BUFFERS_WEBGL: ' + maxdb);
+	gl.getExtension('EXT_color_buffer_float');
+	// gl_draw_buffers = gl.getExtension('WEBGL_draw_buffers');
+	// var maxdb = gl.getParameter(gl_draw_buffers.MAX_DRAW_BUFFERS_WEBGL);
+    // console.log('MAX_DRAW_BUFFERS_WEBGL: ' + maxdb);
+	//gl.getExtension('EXT_shader_texture_lod');
+	//canvas.getContext("webgl2", {preserveDrawingBuffer: true});
 
 	// Add camera
 	const camera = new THREE.PerspectiveCamera(75, gl.canvas.clientWidth / gl.canvas.clientHeight, 1e-3, 1000);

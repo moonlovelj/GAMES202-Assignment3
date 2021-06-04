@@ -15,5 +15,6 @@ async function getShaderString(filename) {
     await this.loadShaderFile(filename).then(result => {
         val = result;
     });
+    val = '#version 300 es\n' + val;
     return val;
 }

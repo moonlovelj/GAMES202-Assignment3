@@ -1,16 +1,16 @@
-attribute vec3 aVertexPosition;
-attribute vec3 aNormalPosition;
-attribute vec2 aTextureCoord;
+in vec3 aVertexPosition;
+in vec3 aNormalPosition;
+in vec2 aTextureCoord;
 
 uniform mat4 uModelMatrix;
 uniform mat4 uViewMatrix;
 uniform mat4 uProjectionMatrix;
 uniform mat4 uLightMVP;
 
-varying highp vec2 vTextureCoord;
-varying highp vec3 vFragPos;
-varying highp vec3 vNormal;
-varying highp vec4 vPositionFromLight;
+out highp vec2 vTextureCoord;
+out highp vec3 vFragPos;
+out highp vec3 vNormal;
+out highp vec4 vPositionFromLight;
 
 void main(void) {
 
