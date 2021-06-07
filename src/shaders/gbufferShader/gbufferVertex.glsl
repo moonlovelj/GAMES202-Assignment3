@@ -23,5 +23,5 @@ void main(void) {
   vWorldToLight = uLightVP;
 
   gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * vec4(aVertexPosition, 1.0);
-  vDepth = gl_Position.z / gl_Position.w;
+  vDepth = gl_Position.w;
 }
