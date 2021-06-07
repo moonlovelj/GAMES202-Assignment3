@@ -16,14 +16,15 @@ in highp float vDepth;
 layout(location = 0) out highp vec4 okd;
 layout(location = 1) out highp vec4 oDepth;
 layout(location = 2) out highp vec4 oNormal;
-layout(location = 3)out highp vec4 oShadow;
+layout(location = 3) out highp vec4 oShadow;
 layout(location = 4) out highp vec4 oPosWorld;
 
 float SimpleShadowMap(vec3 posWorld,float bias){
   vec4 posLight = vWorldToLight * vec4(posWorld, 1.0);
+  posLight = vec4(posLight.x/posLight.w, posLight.y/posLight.w, posLight.z/posLight.w, 1.0);
   vec2 shadowCoord = clamp(posLight.xy * 0.5 + 0.5, vec2(0.0), vec2(1.0));
   float depthSM = texture(uShadowMap, shadowCoord).x;
-  float depth = (posLight.z * 0.5 + 0.5) * 100.0;
+  float depth = posLight.z;//(posLight.z * 0.5 + 0.5) * 100.0;
   return step(0.0, depthSM - depth + bias);
 }
 
@@ -57,6 +58,6 @@ void main(void) {
   okd = vec4(kd, 1.0);
   oDepth = vec4(vec3(vDepth), 1.0);
   oNormal = vec4(ApplyTangentNormalMap(), 1.0);
-  oShadow = vec4(vec3(SimpleShadowMap(vPosWorld.xyz, 1e-2)), 1.0);
+  oShadow = vec4(vec3(SimpleShadowMap(vPosWorld.xyz, 1e-4)), 1.0);
   oPosWorld = vec4(vec3(vPosWorld.xyz), 1.0);
 }

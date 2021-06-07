@@ -16,5 +16,5 @@ void main(void) {
   vTextureCoord = aTextureCoord;
 
   gl_Position = uLightVP * uModelMatrix * vec4(aVertexPosition, 1.0);
-  vDepth = gl_Position.z;
+  vDepth = gl_Position.z / gl_Position.w;
 }

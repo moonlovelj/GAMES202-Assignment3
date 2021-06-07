@@ -77,7 +77,8 @@ vec4 Project(vec4 a) {
 }
 
 float GetDepth(vec3 posWorld) {
-  float depth = (vWorldToScreen * vec4(posWorld, 1.0)).w;
+  vec4 pos = (vWorldToScreen * vec4(posWorld, 1.0));
+  float depth = pos.z/pos.w;//(vWorldToScreen * vec4(posWorld, 1.0)).w;
   return depth;
 }
 
@@ -157,7 +158,7 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos) {
   float delta = 0.5;
   vec3 current = ori + delta * dir;
   vec2 uv = GetScreenCoordinate(current); 
-  for (int times = 0; times < 1000; ++times) {
+  for (int times = 0; times < 10000; ++times) {
     if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
       break;
     }

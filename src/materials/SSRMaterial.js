@@ -22,6 +22,7 @@ class SSRMaterial extends Material {
 
     
     generateMipmaps(gl, gbuffer) {
+        return;
         // depth
         gl.readBuffer(gbuffer.attachments[1]);
         const pixels = new Float32Array(4*canvas_width*canvas_height);
