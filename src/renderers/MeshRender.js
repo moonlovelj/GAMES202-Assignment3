@@ -172,13 +172,6 @@ class MeshRender {
 				gl.bindTexture(gl.TEXTURE_2D, this.material.uniforms[k].value);
 				gl.uniform1i(this.shader.program.uniforms[k], textureNum);
 				textureNum += 1;
-			} else if (this.material.uniforms[k].type == 'textureMipmap') {
-				gl.activeTexture(gl.TEXTURE0 + textureNum);
-				gl.bindTexture(gl.TEXTURE_2D, this.material.uniforms[k].value);
-				//this.material.generateMipmaps(gl, camera.fbo);
-				gl.uniform1i(this.shader.program.uniforms[k], textureNum);
-				
-				textureNum += 1;
 			}
 		}
 	}
