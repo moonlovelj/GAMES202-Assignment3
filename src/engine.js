@@ -3,15 +3,13 @@ var gl, gl_draw_buffers;
 var bufferFBO;
 var bumpMap;
 
-var canvas_width = 2048, canvas_height = 2048;
-
 GAMES202Main();
 
 function GAMES202Main() {
 	// Init canvas
 	const canvas = document.querySelector('#glcanvas');
-	canvas.width = canvas_width;
-	canvas.height = canvas_height;
+	canvas.width = window.screen.width;
+	canvas.height = window.screen.height;
 	// Init gl
 	gl = canvas.getContext('webgl2');
 	if (!gl) {

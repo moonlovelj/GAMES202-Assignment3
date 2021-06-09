@@ -12,6 +12,8 @@ uniform sampler2D uGDepth;
 uniform sampler2D uGNormalWorld;
 uniform sampler2D uGShadow;
 uniform sampler2D uGPosWorld;
+uniform int uBuffWidth;
+uniform int uBuffHeight;
 
 in mat4 vWorldToScreen;
 in highp vec4 vPosWorld;
